@@ -1,6 +1,7 @@
 package orderbook
 
 import (
+	"container/list"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -15,6 +16,11 @@ type Order struct {
 	timestamp time.Time
 	quantity  decimal.Decimal
 	price     decimal.Decimal
+}
+
+type MarketView struct {
+	asks map[string]decimal.Decimal
+	bids map[string]decimal.Decimal
 }
 
 // NewOrder creates new constant object Order
@@ -110,6 +116,33 @@ func (ob *OrderBook) GetOrderSide(side Side) *OrderSide {
 }
 
 // MarketOverview gives an overview of the market including the quantities and prices of each side in the market
-func (os *OrderSide) MarketOverview() {
-	// Todo
+// asks:   qty   price       bids:  qty   price
+//         0.2   14                 0.9   13
+//         0.1   14.5               5     14
+//         0.8   16                 2     16
+func (ob *OrderBook) MarketOverview() *MarketView {
+	return &MarketView{
+		asks: compileOrders(ob.asks.Orders()),
+		bids: compileOrders(ob.bids.Orders()),
+	}
+}
+
+// compileOrders compiles orders in the following format
+func compileOrders(orders []*list.Element) map[string]decimal.Decimal {
+
+	q := make(map[string]decimal.Decimal)
+
+	for _, o := range orders {
+		if order, ok := o.Value.(*Order); ok {
+			if qty, ok := q[order.Price().String()]; ok {
+				qty = qty.Add(order.Quantity())
+				q[order.Price().String()] = qty
+			} else {
+				q[order.Price().String()] = order.Quantity()
+			}
+
+		}
+	}
+
+	return q
 }

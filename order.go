@@ -18,6 +18,7 @@ type Order struct {
 	price     decimal.Decimal
 }
 
+// MarketView represents order book in a glance
 type MarketView struct {
 	asks map[string]decimal.Decimal
 	bids map[string]decimal.Decimal

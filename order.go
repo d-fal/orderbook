@@ -20,8 +20,8 @@ type Order struct {
 
 // MarketView represents order book in a glance
 type MarketView struct {
-	asks map[string]decimal.Decimal
-	bids map[string]decimal.Decimal
+	Asks map[string]decimal.Decimal `json:"asks"`
+	Bids map[string]decimal.Decimal `json:"bids"`
 }
 
 // NewOrder creates new constant object Order
@@ -123,8 +123,8 @@ func (ob *OrderBook) GetOrderSide(side Side) *OrderSide {
 //         0.8   16                 2     16
 func (ob *OrderBook) MarketOverview() *MarketView {
 	return &MarketView{
-		asks: compileOrders(ob.asks.Orders()),
-		bids: compileOrders(ob.bids.Orders()),
+		Asks: compileOrders(ob.asks.Orders()),
+		Bids: compileOrders(ob.bids.Orders()),
 	}
 }
 
